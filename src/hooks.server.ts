@@ -1,4 +1,5 @@
 import { redirect, type Handle } from "@sveltejs/kit";
+import axios from "axios";
 
 export const handle = (async ({ event, resolve }) => {
   const restUrl = event.url.searchParams.get("restUrl");
@@ -12,9 +13,11 @@ export const handle = (async ({ event, resolve }) => {
   const restUrlCookie = event.cookies.get("restUrl");
   const BhRestTokenCookie = event.cookies.get("BhRestToken");
 
-  if (restUrlCookie && BhRestTokenCookie) {
-    event.locals.restUrl = restUrlCookie;
-    event.locals.BhRestToken = BhRestTokenCookie;
+  const validSession = await checkPing(restUrlCookie, BhRestTokenCookie);
+
+  if (validSession) {
+    event.locals.restUrl = restUrlCookie!;
+    event.locals.BhRestToken = BhRestTokenCookie!;
     const response = await resolve(event);
     return response;
   }
@@ -26,3 +29,19 @@ export const handle = (async ({ event, resolve }) => {
     )}`
   );
 }) satisfies Handle;
+
+const checkPing = async (
+  restUrl: string | undefined,
+  BhRestToken: string | undefined
+) => {
+  if (!restUrl || !BhRestToken) return false;
+  try {
+    const { data } = await axios.get(
+      `${restUrl}/ping?pingOnly=true&BhRestToken=${BhRestToken}`
+    );
+    console.log(data);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
