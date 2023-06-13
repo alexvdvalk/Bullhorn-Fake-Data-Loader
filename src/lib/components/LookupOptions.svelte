@@ -29,6 +29,8 @@
   });
 </script>
 
-{#if loaded}
+{#if !loaded}
+  <slot name="loading">Loading...</slot>
+{:else}
   <slot options={output} />
 {/if}

@@ -1064,18 +1064,23 @@
         } else if (field.name.startsWith("email")) {
           obj[field.name] = faker.internet.email();
         } else if (field.optionsType && options[field.optionsType]) {
-          const randdomOption =
+          const randomOption =
             options[field.optionsType][
               Math.floor(Math.random() * options[field.optionsType].length)
             ];
-          if (field.type === "TO_MANY" && randdomOption) {
+
+          if (field.type === "TO_MANY" && randomOption) {
             obj[field.name] = {
-              replaceAll: [randdomOption],
+              replaceAll: [randomOption],
             };
-          } else if (field.type === "TO_ONE" && randdomOption) {
+          } else if (field.type === "TO_ONE" && randomOption) {
             obj[field.name] = {
-              id: randdomOption,
+              id: randomOption,
             };
+          } else if (field.multiValue) {
+            obj[field.name] = [randomOption];
+          } else if (!field.multiValue) {
+            obj[field.name] = randomOption;
           }
         } else if (field.options && field.options.length > 0) {
           obj[field.name] =
