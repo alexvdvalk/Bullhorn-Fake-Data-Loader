@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { faker } from "@faker-js/faker";
+  import { faker } from "@faker-js/faker/locale/en";
   import type { Field5 } from "./Interfaces";
 
   export let fields: Field5[] = [];
