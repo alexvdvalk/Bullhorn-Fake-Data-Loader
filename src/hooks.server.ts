@@ -24,7 +24,7 @@ export const handle = (async ({ event, resolve }) => {
 
   throw redirect(
     302,
-    `https://auth.bullhornstaffing.com/oauth/authorize?response_type=code&client_id=59aed264-3e31-49b7-83c6-ac541d170d36&redirect_uri=https://cls23.bullhornstaffing.com/core/oauth/callback&state=${encodeURI(
+    `https://auth-emea9.bullhornstaffing.com/oauth/authorize?response_type=code&client_id=59aed264-3e31-49b7-83c6-ac541d170d36&redirect_uri=https://cls29.bullhornstaffing.com/core/oauth/callback&state=${encodeURI(
       event.url.href
     )}`
   );
