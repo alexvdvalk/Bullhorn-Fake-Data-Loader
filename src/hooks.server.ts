@@ -37,9 +37,8 @@ const checkPing = async (
   if (!restUrl || !BhRestToken) return false;
   try {
     const { data } = await axios.get(
-      `${restUrl}/ping?pingOnly=true&BhRestToken=${BhRestToken}`
+      `${restUrl}settings/userId?BhRestToken=${BhRestToken}`
     );
-    console.log(data);
     return true;
   } catch (error) {
     return false;
