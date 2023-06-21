@@ -2,25 +2,37 @@ import { redirect, type Handle } from "@sveltejs/kit";
 import axios from "axios";
 
 export const handle = (async ({ event, resolve }) => {
-  const restUrl = event.url.searchParams.get("restUrl");
-  const BhRestToken = event.url.searchParams.get("BhRestToken");
-
-  if (restUrl && BhRestToken) {
-    event.cookies.set("restUrl", decodeURIComponent(restUrl));
-    event.cookies.set("BhRestToken", decodeURIComponent(BhRestToken));
-  }
-
+  //Cookie check
   const restUrlCookie = event.cookies.get("restUrl");
   const BhRestTokenCookie = event.cookies.get("BhRestToken");
 
   const validSession = await checkPing(restUrlCookie, BhRestTokenCookie);
-
-  if (validSession) {
-    event.locals.restUrl = restUrlCookie!;
-    event.locals.BhRestToken = BhRestTokenCookie!;
+  if (validSession && restUrlCookie && BhRestTokenCookie) {
+    event.locals.restUrl = restUrlCookie;
+    event.locals.BhRestToken = BhRestTokenCookie;
     const response = await resolve(event);
     return response;
   }
+
+  //Search Params check
+  const restUrl = event.url.searchParams.get("restUrl");
+  const BhRestToken = event.url.searchParams.get("BhRestToken");
+
+  const validParams = await checkPing(restUrl, BhRestToken);
+
+  if (validParams && restUrl && BhRestToken) {
+    event.cookies.set("restUrl", decodeURIComponent(restUrl));
+    event.cookies.set("BhRestToken", decodeURIComponent(BhRestToken));
+    event.locals.restUrl = decodeURIComponent(restUrl);
+    event.locals.BhRestToken = decodeURIComponent(BhRestToken);
+    const response = await resolve(event);
+    return response;
+  }
+
+  //Else redirect to auth server
+
+  event.url.searchParams.delete("BhRestToken");
+  event.url.searchParams.delete("restUrl");
 
   throw redirect(
     302,
@@ -31,8 +43,8 @@ export const handle = (async ({ event, resolve }) => {
 }) satisfies Handle;
 
 const checkPing = async (
-  restUrl: string | undefined,
-  BhRestToken: string | undefined
+  restUrl: string | undefined | null,
+  BhRestToken: string | undefined | null
 ) => {
   if (!restUrl || !BhRestToken) return false;
   try {
