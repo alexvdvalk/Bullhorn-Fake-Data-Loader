@@ -1,27 +1,24 @@
 <script lang="ts">
+  import type { FieldMap } from "$lib/FieldMap";
+  import type { BullhornMetaResponse } from "$lib/Responses";
   export let entity: string;
   import { Session } from "$lib/store";
 
-  import type { Field5, MetaResonse } from "./Interfaces";
-
-  const getMeta = async (entity = "Candidate"): Promise<Field5[]> => {
-    const { data } = await $Session.get<MetaResonse>(`meta/${entity}`, {
-      params: {
-        fields: "*",
-        meta: "full",
-      },
-    });
-    let fields = data.fields.filter((field) =>
+  const getMeta = async (entity = "Candidate"): Promise<FieldMap[]> => {
+    const { data } = await $Session.get<BullhornMetaResponse>(
+      `meta/${entity}`,
+      {
+        params: {
+          fields: "*",
+          meta: "full",
+        },
+      }
+    );
+    const fields = data.fields.filter((field) =>
       field.hasOwnProperty("sortOrder")
     );
-    fields.sort(compareFunction);
     return fields;
   };
-
-  function compareFunction(a: Field5, b: Field5) {
-    if (a.sortOrder! > b.sortOrder!) return 1;
-    else return -1;
-  }
 </script>
 
 {#await getMeta(entity)}

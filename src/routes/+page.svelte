@@ -36,11 +36,15 @@
       $page.data.locals.BhRestToken
     );
   };
+
+  const entityChanged = () => {
+    result = [];
+  };
 </script>
 
 <div class="flex flex-row gap-4 justify-around px-2 md:px-12">
   <div class="m-2 flex-grow">
-    <FakeDataForm bind:numberRecords bind:entity />
+    <FakeDataForm bind:numberRecords bind:entity on:change={entityChanged} />
     <Meta {entity} let:fields>
       {#if fields}
         <LookupOptions {fields} let:options>

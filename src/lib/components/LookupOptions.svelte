@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import type { Field5 } from "./Interfaces";
   import { Session } from "$lib/store";
-  export let fields: Field5[] = [];
+  import type { FieldMap } from "$lib/FieldMap";
+  export let fields: FieldMap[] = [];
 
   let output: any = {};
 
@@ -21,10 +21,8 @@
         fields.filter((field) => !!field.optionsUrl).map((i) => i.optionsType)
       ),
     ];
-    console.log("optionsFields", optionsFields);
     let promArray = optionsFields.map((i) => loadOptions(i));
     await Promise.allSettled(promArray);
-    console.log("OUTPUT", output);
     loaded = true;
   });
 </script>

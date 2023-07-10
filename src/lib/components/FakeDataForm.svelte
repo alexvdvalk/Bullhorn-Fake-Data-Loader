@@ -11,7 +11,7 @@
 <form on:submit|preventDefault={submitted}>
   <label class="label">
     <span>Entity</span>
-    <select class="select" bind:value={entity}>
+    <select class="select" bind:value={entity} on:change>
       {#each mainEntities as entity}
         <option value={entity}><EntityLabel {entity} /></option>
       {/each}
