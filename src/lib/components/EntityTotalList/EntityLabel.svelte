@@ -6,7 +6,7 @@
 
   $: path = `entityTitle${entity}${plural}`;
 
-  $: key = (($settings.settings as any)[path] as any) || entity;
+  $: key = (($settings.settings as any)[path] as string) || entity;
 </script>
 
 {key}

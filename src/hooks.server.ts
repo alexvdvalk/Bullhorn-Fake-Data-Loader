@@ -51,7 +51,6 @@ const checkPing = async (
     const { data } = await axios.get(
       `${restUrl}settings/userId?BhRestToken=${BhRestToken}`
     );
-    console.log(data);
     return true;
   } catch (error) {
     return false;

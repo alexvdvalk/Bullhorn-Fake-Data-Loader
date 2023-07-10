@@ -1,33 +1,25 @@
 <script lang="ts">
+  import { page } from "$app/stores";
   import EntityTotals from "$lib/components/EntityTotalList/EntityTotals.svelte";
   import FakeDataForm from "$lib/components/FakeDataForm.svelte";
+  import type { Entity } from "$lib/components/Interfaces";
   import LookupOptions from "$lib/components/LookupOptions.svelte";
   import Meta from "$lib/components/Meta.svelte";
   import RandomRecords from "$lib/components/RandomRecords.svelte";
-  import { Session } from "$lib/store";
+  import { Session, totalsArray } from "$lib/store";
 
-  let entity:
-    | "Candidate"
-    | "ClientContact"
-    | "JobOrder"
-    | "Placement"
-    | "Appointment"
-    | "Sendout"
-    | "JobSubmission"
-    | "Note"
-    | "ClientCorporation";
+  let entity: Entity;
   let numberRecords: number;
 
   let adding = false;
   let result: PromiseSettledResult<any>[] = [];
 
-  $: entity, (result = []);
   let resolvedPromises: PromiseFulfilledResult<any>[] = [];
   $: resolvedPromises = result.filter(
     (i) => i.status === "fulfilled"
   ) as PromiseFulfilledResult<any>[];
 
-  const addRecords = async (entity: string, records: any[]) => {
+  const addRecords = async (entity: Entity, records: any[]) => {
     adding = true;
     result = [];
     let promArray: Promise<any>[] = [];
@@ -38,6 +30,11 @@
     console.log("out", out);
     adding = false;
     result = out;
+    totalsArray.reloadEntity(
+      entity,
+      $page.data.locals.restUrl,
+      $page.data.locals.BhRestToken
+    );
   };
 </script>
 
@@ -70,6 +67,7 @@
                     {#each resolvedPromises as i}
                       <li>
                         <a
+                          class="anchor"
                           target="_blank"
                           href={`https://cls29.bullhornstaffing.com/BullhornSTAFFING/OpenWindow.cfm?Entity=${entity}&id=${i.value.data.changedEntityId}`}
                         >

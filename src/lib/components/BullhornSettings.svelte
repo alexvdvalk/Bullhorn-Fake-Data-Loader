@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { Session, settings, type SettingsResponse } from "$lib/store";
+  import { Session, settings } from "$lib/store";
+  import type { SettingsResponse } from "./Interfaces";
   import Loader from "./Loader.svelte";
 
   const loadSettings = async () => {
