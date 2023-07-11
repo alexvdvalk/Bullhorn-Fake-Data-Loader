@@ -15,5 +15,4 @@
   <Loader />
 {:then _}
   <slot />
-  <!-- <Loader /> -->
 {/await}

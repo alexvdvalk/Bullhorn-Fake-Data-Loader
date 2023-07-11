@@ -22,6 +22,8 @@
               Loading...
             {:then t}
               {t}
+            {:catch _}
+              Error
             {/await}
           </td>
         </tr>
