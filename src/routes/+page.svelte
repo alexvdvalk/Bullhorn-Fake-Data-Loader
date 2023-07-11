@@ -42,7 +42,7 @@
   };
 </script>
 
-<div class="flex flex-row gap-4 justify-around px-2 md:px-12">
+<div class="flex flex-col gap-4 justify-around px-2 md:px-12 md:flex-row">
   <div class="m-2 flex-grow">
     <FakeDataForm bind:numberRecords bind:entity on:change={entityChanged} />
     <Meta {entity} let:fields>
