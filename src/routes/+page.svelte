@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { PageData } from "./$types";
   import { page } from "$app/stores";
-  export let data: PageData;
 
   $: returnUrl = encodeURI($page.url.origin) + "/add";
 </script>

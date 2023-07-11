@@ -2,45 +2,38 @@ import { redirect, type Handle } from "@sveltejs/kit";
 import axios from "axios";
 
 export const handle = (async ({ event, resolve }) => {
-  if (event.url.pathname === "/") {
-    const response = await resolve(event);
-    return response;
-  }
-  //Check if cookie with active tokens exists.
-  const restUrlCookie = event.cookies.get("restUrl");
-  const BhRestTokenCookie = event.cookies.get("BhRestToken");
+  const restUrl =
+    event.url.searchParams.get("restUrl") || event.cookies.get("restUrl");
 
-  const validSessionFromCookies = await checkPing(
-    restUrlCookie,
-    BhRestTokenCookie
-  );
-  if (validSessionFromCookies) {
-    event.locals.restUrl = restUrlCookie!;
-    event.locals.BhRestToken = BhRestTokenCookie!;
-    const response = await resolve(event);
-    return response;
-  } else {
-    event.cookies.delete("BhRestToken");
-    event.cookies.delete("restUrl");
+  const BhRestToken =
+    event.url.searchParams.get("BhRestToken") ||
+    event.cookies.get("BhRestToken");
+
+  const validSession = await checkPing(restUrl, BhRestToken);
+
+  if (event.url.pathname === "/" && validSession) {
+    throw redirect(302, "/add");
   }
 
-  //if no cookie, check if query params are provided
-  const restUrl = event.url.searchParams.get("restUrl");
-  const BhRestToken = event.url.searchParams.get("BhRestToken");
-
-  const validParams = await checkPing(restUrl, BhRestToken);
-
-  console.log({ validParams });
-  if (validParams && restUrl && BhRestToken) {
-    event.cookies.set("restUrl", decodeURIComponent(restUrl));
-    event.cookies.set("BhRestToken", decodeURIComponent(BhRestToken));
-    event.locals.restUrl = decodeURIComponent(restUrl);
-    event.locals.BhRestToken = decodeURIComponent(BhRestToken);
+  if (validSession) {
+    const r = decodeURIComponent(restUrl!);
+    const b = decodeURIComponent(BhRestToken!);
+    event.cookies.set("restUrl", r);
+    event.cookies.set("BhRestToken", b);
+    event.locals.restUrl = r;
+    event.locals.BhRestToken = b;
     const response = await resolve(event);
+    if (!response.ok) {
+      throw redirect(302, "/add");
+    }
     return response;
   }
+  if (event.url.pathname !== "/") {
+    throw redirect(302, "/");
+  }
+  const response = await resolve(event);
 
-  throw redirect(302, "/");
+  return response;
 }) satisfies Handle;
 
 const checkPing = async (
