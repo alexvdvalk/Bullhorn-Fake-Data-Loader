@@ -2,24 +2,35 @@ import { redirect, type Handle } from "@sveltejs/kit";
 import axios from "axios";
 
 export const handle = (async ({ event, resolve }) => {
-  //Cookie check
-  const restUrlCookie = event.cookies.get("restUrl");
-  const BhRestTokenCookie = event.cookies.get("BhRestToken");
-
-  const validSession = await checkPing(restUrlCookie, BhRestTokenCookie);
-  if (validSession && restUrlCookie && BhRestTokenCookie) {
-    event.locals.restUrl = restUrlCookie;
-    event.locals.BhRestToken = BhRestTokenCookie;
+  if (event.url.pathname === "/") {
     const response = await resolve(event);
     return response;
   }
+  //Check if cookie with active tokens exists.
+  const restUrlCookie = event.cookies.get("restUrl");
+  const BhRestTokenCookie = event.cookies.get("BhRestToken");
 
-  //Search Params check
+  const validSessionFromCookies = await checkPing(
+    restUrlCookie,
+    BhRestTokenCookie
+  );
+  if (validSessionFromCookies) {
+    event.locals.restUrl = restUrlCookie!;
+    event.locals.BhRestToken = BhRestTokenCookie!;
+    const response = await resolve(event);
+    return response;
+  } else {
+    event.cookies.delete("BhRestToken");
+    event.cookies.delete("restUrl");
+  }
+
+  //if no cookie, check if query params are provided
   const restUrl = event.url.searchParams.get("restUrl");
   const BhRestToken = event.url.searchParams.get("BhRestToken");
 
   const validParams = await checkPing(restUrl, BhRestToken);
 
+  console.log({ validParams });
   if (validParams && restUrl && BhRestToken) {
     event.cookies.set("restUrl", decodeURIComponent(restUrl));
     event.cookies.set("BhRestToken", decodeURIComponent(BhRestToken));
@@ -29,17 +40,7 @@ export const handle = (async ({ event, resolve }) => {
     return response;
   }
 
-  //Else redirect to auth server
-
-  event.url.searchParams.delete("BhRestToken");
-  event.url.searchParams.delete("restUrl");
-
-  throw redirect(
-    302,
-    `https://auth-emea9.bullhornstaffing.com/oauth/authorize?response_type=code&client_id=59aed264-3e31-49b7-83c6-ac541d170d36&redirect_uri=https://cls29.bullhornstaffing.com/core/oauth/callback&state=${encodeURI(
-      event.url.href
-    )}`
-  );
+  throw redirect(302, "/");
 }) satisfies Handle;
 
 const checkPing = async (
@@ -48,9 +49,7 @@ const checkPing = async (
 ) => {
   if (!restUrl || !BhRestToken) return false;
   try {
-    const { data } = await axios.get(
-      `${restUrl}settings/userId?BhRestToken=${BhRestToken}`
-    );
+    await axios.get(`${restUrl}settings/userId?BhRestToken=${BhRestToken}`);
     return true;
   } catch (error) {
     return false;
