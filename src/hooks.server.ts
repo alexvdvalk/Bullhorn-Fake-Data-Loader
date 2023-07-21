@@ -10,10 +10,7 @@ export const handle = (async ({ event, resolve }) => {
     event.cookies.get("BhRestToken");
 
   const validSession = await checkPing(restUrl, BhRestToken);
-
-  if (event.url.pathname === "/" && validSession) {
-    throw redirect(302, "/add");
-  }
+  event.locals.validSession = validSession;
 
   if (validSession) {
     const r = decodeURIComponent(restUrl!);
@@ -23,13 +20,7 @@ export const handle = (async ({ event, resolve }) => {
     event.locals.restUrl = r;
     event.locals.BhRestToken = b;
     const response = await resolve(event);
-    if (!response.ok) {
-      throw redirect(302, "/add");
-    }
     return response;
-  }
-  if (event.url.pathname !== "/") {
-    throw redirect(302, "/");
   }
   const response = await resolve(event);
 
