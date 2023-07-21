@@ -1,4 +1,4 @@
-import { redirect, type Handle } from "@sveltejs/kit";
+import type { Handle } from "@sveltejs/kit";
 import axios from "axios";
 
 export const handle = (async ({ event, resolve }) => {
