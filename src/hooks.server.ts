@@ -19,11 +19,9 @@ export const handle = (async ({ event, resolve }) => {
     event.cookies.set("BhRestToken", b);
     event.locals.restUrl = r;
     event.locals.BhRestToken = b;
-    const response = await resolve(event);
-    return response;
   }
-  const response = await resolve(event);
 
+  const response = await resolve(event);
   return response;
 }) satisfies Handle;
 
