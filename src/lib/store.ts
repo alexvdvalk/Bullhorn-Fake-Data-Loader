@@ -1,11 +1,10 @@
 import { EntityTypes } from "@bullhorn/bullhorn-types";
 import type { AxiosInstance } from "axios";
 import { writable } from "svelte/store";
-import type { Entity, SettingsResponse } from "./components/Interfaces";
+import type { Entity } from "./components/Interfaces";
 import axios from "axios";
 
 export const Session = writable<AxiosInstance>();
-export const settings = writable<SettingsResponse>();
 
 export const mainEntities = [
   EntityTypes.Candidate,

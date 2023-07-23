@@ -1,5 +1,4 @@
 <script lang="ts">
-  import BullhornSettings from "$lib/components/BullhornSettings.svelte";
   import SessionStore from "$lib/components/SessionStore.svelte";
   import TheHeader from "$lib/components/TheHeader.svelte";
 
@@ -15,7 +14,5 @@
   BhRestToken={data.locals.BhRestToken}
 >
   <TheHeader />
-  <BullhornSettings>
-    <slot />
-  </BullhornSettings>
+  <slot />
 </SessionStore>

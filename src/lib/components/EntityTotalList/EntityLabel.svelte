@@ -1,12 +1,11 @@
 <script lang="ts">
-  import { settings } from "$lib/store";
-
+  import { page } from "$app/stores";
   export let entity: string;
   export let plural: "Many" | "None" | "" = "";
 
   $: path = `entityTitle${entity}${plural}`;
 
-  $: key = (($settings.settings as any)[path] as string) || entity;
+  $: key = (($page.data.settings as any)[path] as string) || entity;
 </script>
 
 {key}
