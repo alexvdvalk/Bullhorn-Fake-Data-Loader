@@ -40,11 +40,11 @@ const getTotal = async (
   restUrl: string,
   BhRestToken: string
 ): Promise<number> => {
-  let method = isSearchable(e) ? "search" : "query";
-  let filter = isSearchable(e) ? "query=id[* TO *]" : "where=id>0";
-  let queryPath = `${method}/${e}?${filter}&fields=id&count=1&totalOnly=true`;
+  const method = isSearchable(e) ? "search" : "query";
+  const filter = isSearchable(e) ? "query=id[* TO *]" : "where=id>0";
+  const queryPath = `${method}/${e}?${filter}&fields=id&count=1&totalOnly=true`;
   const instance = axios.create({ baseURL: restUrl, params: { BhRestToken } });
-  let { data } = await instance.get<{ total: number }>(queryPath);
+  const { data } = await instance.get<{ total: number }>(queryPath);
   return data.total as number;
 };
 

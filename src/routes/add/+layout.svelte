@@ -2,10 +2,8 @@
   import BullhornSettings from "$lib/components/BullhornSettings.svelte";
   import SessionStore from "$lib/components/SessionStore.svelte";
   import TheHeader from "$lib/components/TheHeader.svelte";
-  import { totalsArray } from "$lib/store";
 
   export let data;
-  totalsArray.load(data.locals.restUrl, data.locals.BhRestToken);
 </script>
 
 <svelte:head>
