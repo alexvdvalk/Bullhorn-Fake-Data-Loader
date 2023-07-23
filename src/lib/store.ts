@@ -48,18 +48,6 @@ const getTotal = async (
   return data.total as number;
 };
 
-export const getTotalStore = (entity: string) => {
-  const { set, subscribe } = writable<Promise<number>>();
-
-  const load = async (restUrl: string, BhRestToken: string) => {
-    set(getTotal(entity, restUrl, BhRestToken));
-  };
-
-  return { subscribe, load };
-};
-
-export const candidateTotal = getTotalStore("Candidate");
-
 export const getTotalsArray = () => {
   const { set, subscribe, update } = writable<
     { entity: string; total: Promise<number> }[]
