@@ -12,5 +12,7 @@ export const load = (async ({ locals }) => {
   let { data } = await instance.get<SettingsResponse>(
     "services/settings/allEntitlementsAndSettings"
   );
-  return { settings: data };
+  const { entitlements, dashboardEntitlements, ...settings } = data;
+
+  return { settings };
 }) satisfies PageServerLoad;
