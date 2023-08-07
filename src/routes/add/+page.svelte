@@ -1,51 +1,52 @@
 <script lang="ts">
-  import { page } from "$app/stores";
   import EntityTotals from "$lib/components/EntityTotalList/EntityTotals.svelte";
   import FakeDataForm from "$lib/components/FakeDataForm.svelte";
   import type { Entity } from "$lib/components/Interfaces";
-  import LookupOptions from "$lib/components/LookupOptions.svelte";
-  import Meta from "$lib/components/Meta.svelte";
-  import RandomRecords from "$lib/components/RandomRecords.svelte";
-  import { Session, totalsArray } from "$lib/store";
+  import { EntityTypes } from "@bullhorn/bullhorn-types";
+  import type { ActionData } from "./$types";
+  import Loader from "$lib/components/Loader.svelte";
 
-  let entity: Entity;
-  let numberRecords: number;
+  let entity: Entity = EntityTypes.Candidate;
+  let numberRecords = 2;
+  let formLoading: boolean;
 
-  let adding = false;
-  let result: PromiseSettledResult<any>[] = [];
+  export let form: ActionData;
 
-  let resolvedPromises: PromiseFulfilledResult<any>[] = [];
-  $: resolvedPromises = result.filter(
-    (i) => i.status === "fulfilled"
-  ) as PromiseFulfilledResult<any>[];
-
-  const addRecords = async (entity: Entity, records: any[]) => {
-    adding = true;
-    result = [];
-    let promArray: Promise<any>[] = [];
-    records.map((i) => {
-      promArray.push($Session.put(`/entity/${entity}`, i));
-    });
-    let out = await Promise.allSettled(promArray);
-    console.log("out", out);
-    adding = false;
-    result = out;
-    totalsArray.reloadEntity(
-      entity,
-      $page.data.locals.restUrl,
-      $page.data.locals.BhRestToken
-    );
-  };
-
-  const entityChanged = () => {
-    result = [];
-  };
+  $: if (form?.count && +form?.count) numberRecords = +form.count;
+  $: if (form?.entity && typeof form.entity === "string")
+    entity = form.entity as Entity;
 </script>
 
 <div class="flex flex-col gap-4 justify-center px-2 md:px-12 md:flex-row">
-  <div class="m-2 flex-grow max-w-full md:max-w-md">
-    <FakeDataForm bind:numberRecords bind:entity on:change={entityChanged} />
-    <Meta {entity} let:fields>
+  {#if formLoading}
+    <Loader />
+  {:else}
+    <div class="m-2 flex-grow max-w-full md:max-w-md">
+      <FakeDataForm {numberRecords} {entity} bind:formLoading />
+      {#if form !== null}
+        {#if form.successful}
+          <div>
+            <p>Created Ids</p>
+            <ul>
+              {#each form.successful as i}
+                <li>
+                  <a
+                    class="anchor"
+                    target="_blank"
+                    href={`https://cls29.bullhornstaffing.com/BullhornSTAFFING/OpenWindow.cfm?Entity=${form.entity}&id=${i}`}
+                  >
+                    {i}
+                  </a>
+                </li>
+              {/each}
+            </ul>
+          </div>
+        {/if}
+        <div>
+          Failed: {form.failedCount}
+        </div>
+      {/if}
+      <!-- <Meta {entity} let:fields>
       {#if fields}
         <LookupOptions {fields} let:options>
           {#if options}
@@ -62,13 +63,13 @@
                 }}
                 type="button"
                 class="btn variant-filled mt-2"
-                disabled={adding}>Add</button
+                disabled={adding}>Add Old</button
               >
               {#if result.length > 0}
                 <div>
                   <p>Created Ids</p>
                   <ul>
-                    {#each resolvedPromises as i}
+                    {#each form as i}
                       <li>
                         <a
                           class="anchor"
@@ -89,9 +90,10 @@
           {/if}
         </LookupOptions>
       {/if}
-    </Meta>
-  </div>
-  <div class="m-2">
-    <EntityTotals />
-  </div>
+    </Meta> -->
+    </div>
+    <div class="m-2">
+      <EntityTotals />
+    </div>
+  {/if}
 </div>

@@ -6,7 +6,6 @@ declare global {
     interface Locals {
       BhRestToken: string;
       restUrl: string;
-      validSession: boolean;
     }
     // interface PageData {}
     // interface Platform {}

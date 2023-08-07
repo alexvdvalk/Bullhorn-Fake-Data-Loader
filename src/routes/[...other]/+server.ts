@@ -1,7 +1,6 @@
 import { redirect } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 
-export const GET: RequestHandler = async ({ locals }) => {
-  if (locals.validSession) throw redirect(302, "/add");
+export const GET: RequestHandler = async () => {
   throw redirect(302, "/");
 };

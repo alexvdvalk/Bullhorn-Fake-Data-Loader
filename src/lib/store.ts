@@ -1,10 +1,5 @@
 import { EntityTypes } from "@bullhorn/bullhorn-types";
-import type { AxiosInstance } from "axios";
-import { writable } from "svelte/store";
-import type { Entity } from "./components/Interfaces";
 import axios from "axios";
-
-export const Session = writable<AxiosInstance>();
 
 export const mainEntities = [
   EntityTypes.Candidate,
@@ -16,6 +11,8 @@ export const mainEntities = [
   EntityTypes.JobSubmission,
   EntityTypes.Note,
   EntityTypes.ClientCorporation,
+  EntityTypes.Lead,
+  EntityTypes.Opportunity,
 ];
 
 const isSearchable = (entity: string): boolean => {
@@ -34,7 +31,7 @@ const isSearchable = (entity: string): boolean => {
   );
 };
 
-const getTotal = async (
+export const getTotal = async (
   e: string,
   restUrl: string,
   BhRestToken: string
@@ -47,36 +44,36 @@ const getTotal = async (
   return data.total as number;
 };
 
-export const getTotalsArray = () => {
-  const { set, subscribe, update } = writable<
-    { entity: string; total: Promise<number> }[]
-  >([]);
+// export const getTotalsArray = () => {
+//   const { set, subscribe, update } = writable<
+//     { entity: string; total: Promise<number> }[]
+//   >([]);
 
-  const load = (restUrl: string, BhRestToken: string) => {
-    let d = mainEntities.map((entity) => {
-      return {
-        entity,
-        total: getTotal(entity, restUrl, BhRestToken),
-      };
-    });
-    set(d);
-  };
+//   const load = (restUrl: string, BhRestToken: string) => {
+//     let d = mainEntities.map((entity) => {
+//       return {
+//         entity,
+//         total: getTotal(entity, restUrl, BhRestToken),
+//       };
+//     });
+//     set(d);
+//   };
 
-  const reloadEntity = (
-    entity: Entity,
-    restUrl: string,
-    BhRestToken: string
-  ) => {
-    update((totals) => {
-      let e = totals.find((i) => i.entity === entity);
-      if (e) {
-        e.total = getTotal(e.entity, restUrl, BhRestToken);
-      }
-      return totals;
-    });
-  };
+//   const reloadEntity = (
+//     entity: Entity,
+//     restUrl: string,
+//     BhRestToken: string
+//   ) => {
+//     update((totals) => {
+//       let e = totals.find((i) => i.entity === entity);
+//       if (e) {
+//         e.total = getTotal(e.entity, restUrl, BhRestToken);
+//       }
+//       return totals;
+//     });
+//   };
 
-  return { load, subscribe, reloadEntity };
-};
+//   return { load, subscribe, reloadEntity };
+// };
 
-export const totalsArray = getTotalsArray();
+// export const totalsArray = getTotalsArray();

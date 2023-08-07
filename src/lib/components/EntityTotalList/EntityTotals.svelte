@@ -1,12 +1,5 @@
 <script lang="ts">
-  import EntityLabel from "./EntityLabel.svelte";
-  import { totalsArray } from "$lib/store";
-  import { onMount } from "svelte";
   import { page } from "$app/stores";
-
-  onMount(() => {
-    totalsArray.load($page.data.locals.restUrl, $page.data.locals.BhRestToken);
-  });
 </script>
 
 <!-- Responsive Container (recommended) -->
@@ -20,9 +13,9 @@
       </tr>
     </thead>
     <tbody>
-      {#each $totalsArray as { entity, total }, i}
+      {#each $page.data.totals as { total, label }, i}
         <tr>
-          <td> <EntityLabel {entity} /> </td>
+          <td> {label}</td>
           <td>
             {#await total}
               Loading...
