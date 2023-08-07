@@ -1,5 +1,4 @@
 import type { Handle } from "@sveltejs/kit";
-import axios from "axios";
 
 export const handle = (async ({ event, resolve }) => {
   const restUrl =
@@ -10,8 +9,8 @@ export const handle = (async ({ event, resolve }) => {
     event.cookies.get("BhRestToken");
   const r = decodeURIComponent(restUrl!);
   const b = decodeURIComponent(BhRestToken!);
-  event.cookies.set("restUrl", r);
-  event.cookies.set("BhRestToken", b);
+  if (r) event.cookies.set("restUrl", r);
+  if (b) event.cookies.set("BhRestToken", b);
   event.locals.restUrl = r;
   event.locals.BhRestToken = b;
 

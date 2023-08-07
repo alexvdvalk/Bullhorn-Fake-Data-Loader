@@ -13,6 +13,7 @@ export const mainEntities = [
   EntityTypes.ClientCorporation,
   EntityTypes.Lead,
   EntityTypes.Opportunity,
+  EntityTypes.Task,
 ];
 
 const isSearchable = (entity: string): boolean => {
