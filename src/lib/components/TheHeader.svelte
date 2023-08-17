@@ -6,7 +6,7 @@
 <AppBar gridColumns="grid-cols-1">
   <div class="w-full text-ellipsis whitespace-nowrap overflow-hidden">
     <span>
-      {$page.data.settings.settings.corporationName} - DO NOT USE ON PRODUCTION SYSTEMS
+      {$page.data.settings.corporationName} - DO NOT USE ON PRODUCTION SYSTEMS
     </span>
   </div>
 </AppBar>

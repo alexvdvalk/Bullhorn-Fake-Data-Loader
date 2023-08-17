@@ -15,7 +15,7 @@ export const load = (async ({ locals, parent }) => {
   const { settings } = await parent();
 
   const entityCounts = mainEntities.map((ent) => {
-    let label = (settings.settings as any)[`entityTitle${ent}Many`] || ent;
+    let label = (settings as any)[`entityTitle${ent}Many`] || ent;
     return {
       entity: ent,
       label,

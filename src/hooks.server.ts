@@ -2,11 +2,11 @@ import type { Handle } from "@sveltejs/kit";
 
 export const handle = (async ({ event, resolve }) => {
   const restUrl =
-    event.url.searchParams.get("restUrl") || event.cookies.get("restUrl");
+    event.cookies.get("restUrl") || event.url.searchParams.get("restUrl");
 
   const BhRestToken =
-    event.url.searchParams.get("BhRestToken") ||
-    event.cookies.get("BhRestToken");
+    event.cookies.get("BhRestToken") ||
+    event.url.searchParams.get("BhRestToken");
   const r = decodeURIComponent(restUrl!);
   const b = decodeURIComponent(BhRestToken!);
   if (r) event.cookies.set("restUrl", r);

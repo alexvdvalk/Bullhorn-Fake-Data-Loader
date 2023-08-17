@@ -1,6 +1,6 @@
 import { redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
-import axios from "axios";
+import { checkPing } from "$lib/checkPing";
 
 export const load = (async ({ locals, cookies }) => {
   const validSession = await checkPing(locals.restUrl, locals.BhRestToken);
@@ -8,16 +8,3 @@ export const load = (async ({ locals, cookies }) => {
   cookies.delete("restUrl");
   cookies.delete("BhRestToken");
 }) satisfies PageServerLoad;
-
-const checkPing = async (
-  restUrl: string | undefined | null,
-  BhRestToken: string | undefined | null
-) => {
-  if (!restUrl || !BhRestToken) return false;
-  try {
-    await axios.get(`${restUrl}settings/userId?BhRestToken=${BhRestToken}`);
-    return true;
-  } catch (error) {
-    return false;
-  }
-};
