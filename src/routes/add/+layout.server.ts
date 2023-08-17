@@ -10,18 +10,23 @@ export const load = (async ({ locals, cookies }) => {
     baseURL: locals.restUrl,
     params: { BhRestToken: locals.BhRestToken },
   });
-  const settings = await getSettings(instance, cookies);
-  const entities = mainEntities.map((ent) => {
-    return {
-      entity: ent,
-      label: (settings.settings as any)[`entityTitle${ent}`] || ent,
-    };
-  });
 
-  return {
-    settings: settings,
-    entities,
-  };
+  try {
+    const settings = await getSettings(instance, cookies);
+    const entities = mainEntities.map((ent) => {
+      return {
+        entity: ent,
+        label: (settings.settings as any)[`entityTitle${ent}`] || ent,
+      };
+    });
+
+    return {
+      settings: settings,
+      entities,
+    };
+  } catch (error) {
+    throw redirect(302, "/");
+  }
 }) satisfies LayoutServerLoad;
 
 const getSettings = async (instance: AxiosInstance, cookies: Cookies) => {
@@ -29,26 +34,22 @@ const getSettings = async (instance: AxiosInstance, cookies: Cookies) => {
   if (fromCookies) {
     return { settings: JSON.parse(fromCookies) };
   }
-  try {
-    let { data } = await instance.get<SettingsResponse>(
-      "services/settings/allEntitlementsAndSettings"
-    );
-    let newSettings: any = {};
+  let { data } = await instance.get<SettingsResponse>(
+    "services/settings/allEntitlementsAndSettings"
+  );
+  let newSettings: any = {};
 
-    Object.keys(data.settings).forEach((attribute) => {
-      for (let ent of mainEntities) {
-        if (
-          attribute === `entityTitle${ent}` ||
-          attribute === `entityTitle${ent}Many` ||
-          attribute === "corporationName"
-        ) {
-          newSettings[attribute] = (data.settings as any)[attribute];
-        }
+  Object.keys(data.settings).forEach((attribute) => {
+    for (let ent of mainEntities) {
+      if (
+        attribute === `entityTitle${ent}` ||
+        attribute === `entityTitle${ent}Many` ||
+        attribute === "corporationName"
+      ) {
+        newSettings[attribute] = (data.settings as any)[attribute];
       }
-    });
-    cookies.set("entityLabels", JSON.stringify(newSettings));
-    return { settings: newSettings };
-  } catch (error) {
-    throw redirect(302, "/");
-  }
+    }
+  });
+  cookies.set("entityLabels", JSON.stringify(newSettings));
+  return { settings: newSettings };
 };

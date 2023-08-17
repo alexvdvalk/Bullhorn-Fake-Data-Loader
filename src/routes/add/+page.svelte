@@ -46,51 +46,6 @@
           Failed: {form.failedCount}
         </div>
       {/if}
-      <!-- <Meta {entity} let:fields>
-      {#if fields}
-        <LookupOptions {fields} let:options>
-          {#if options}
-            <RandomRecords
-              let:output
-              {fields}
-              numberOfRecords={numberRecords}
-              {options}
-              {entity}
-            >
-              <button
-                on:click={() => {
-                  addRecords(entity, output);
-                }}
-                type="button"
-                class="btn variant-filled mt-2"
-                disabled={adding}>Add Old</button
-              >
-              {#if result.length > 0}
-                <div>
-                  <p>Created Ids</p>
-                  <ul>
-                    {#each form as i}
-                      <li>
-                        <a
-                          class="anchor"
-                          target="_blank"
-                          href={`https://cls29.bullhornstaffing.com/BullhornSTAFFING/OpenWindow.cfm?Entity=${entity}&id=${i.value.data.changedEntityId}`}
-                        >
-                          {i.value.data.changedEntityId}
-                        </a>
-                      </li>
-                    {/each}
-                  </ul>
-                </div>
-                <div>
-                  Failed: {result.filter((i) => i.status === "rejected").length}
-                </div>
-              {/if}
-            </RandomRecords>
-          {/if}
-        </LookupOptions>
-      {/if}
-    </Meta> -->
     </div>
     <div class="m-2">
       <EntityTotals />
