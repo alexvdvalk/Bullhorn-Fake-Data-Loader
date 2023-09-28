@@ -159,9 +159,10 @@ const generateItems = (
         obj[field.name] = Math.random() > 0.5;
       } else if (field.inputType === "TEXTAREA") {
         obj[field.name] = faker.lorem.paragraph();
-      } else if (field.dataSpecialization === "INTEGER") {
-        obj[field.name] = faker.number.int({ min: 0, max: 1000 });
-      } else if (field.dataSpecialization === "MONEY") {
+      } else if (
+        field.dataSpecialization &&
+        ["MONEY", "INTEGER", "FLOAT"].includes(field.dataSpecialization)
+      ) {
         obj[field.name] = faker.number.int({ min: 0, max: 1000 });
       } else if (
         field.type === "COMPOSITE" &&
