@@ -8,7 +8,7 @@ import { checkPing } from "$lib/checkPing";
 
 export const load = (async ({ url, locals, cookies }) => {
   if (url.search.length > 0) {
-    throw redirect(302, "/add");
+    redirect(302, "/add");
   }
   const instance = axios.create({
     baseURL: locals.restUrl,
@@ -36,7 +36,7 @@ export const load = (async ({ url, locals, cookies }) => {
       entities,
     };
   } catch (error) {
-    throw redirect(302, "/");
+    // redirect(302, "/");
   }
 }) satisfies LayoutServerLoad;
 
@@ -68,6 +68,6 @@ const getSettings = async (instance: AxiosInstance, cookies: Cookies) => {
       }
     }
   });
-  cookies.set("entityLabels", JSON.stringify(newSettings));
+  cookies.set("entityLabels", JSON.stringify(newSettings), { path: "/" });
   return newSettings;
 };

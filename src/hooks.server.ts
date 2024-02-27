@@ -9,8 +9,11 @@ export const handle = (async ({ event, resolve }) => {
     event.url.searchParams.get("BhRestToken");
   const r = decodeURIComponent(restUrl!);
   const b = decodeURIComponent(BhRestToken!);
-  if (r) event.cookies.set("restUrl", r);
-  if (b) event.cookies.set("BhRestToken", b);
+  if (r)
+    event.cookies.set("restUrl", r, {
+      path: "/",
+    });
+  if (b) event.cookies.set("BhRestToken", b, { path: "/" });
   event.locals.restUrl = r;
   event.locals.BhRestToken = b;
 

@@ -4,7 +4,7 @@ import { checkPing } from "$lib/checkPing";
 
 export const load = (async ({ locals, cookies }) => {
   const validSession = await checkPing(locals.restUrl, locals.BhRestToken);
-  if (validSession) throw redirect(302, "/add");
-  cookies.delete("restUrl");
-  cookies.delete("BhRestToken");
+  if (validSession) redirect(302, "/add");
+  cookies.delete("restUrl", { path: "/" });
+  cookies.delete("BhRestToken", { path: "/" });
 }) satisfies PageServerLoad;
