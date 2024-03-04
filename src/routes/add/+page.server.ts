@@ -144,7 +144,7 @@ const addFakeRecords = async (
   let promArray: Promise<any>[] = fakeRecords.map((i) =>
     instance.put<EntityPutResponse>(`/entity/${entity}`, i)
   );
-  return Promise.all(promArray);
+  return Promise.allSettled(promArray);
 };
 
 interface EntityPutResponse {
