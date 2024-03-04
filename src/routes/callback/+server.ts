@@ -1,5 +1,6 @@
 import { redirect } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
+import { dev } from "$app/environment";
 
 export const GET: RequestHandler = async ({ url, cookies, locals }) => {
   const restUrl = url.searchParams.get("restUrl");
@@ -7,14 +8,15 @@ export const GET: RequestHandler = async ({ url, cookies, locals }) => {
 
   if (!restUrl || !BhRestToken) redirect(302, "/");
 
-  cookies.set("restUrl", restUrl, {
+  const options = {
     path: "/",
-    maxAge: 60 * 60 * 24,
-  });
-  cookies.set("BhRestToken", BhRestToken, {
-    path: "/",
-    maxAge: 60 * 60 * 24,
-  });
+    httpOnly: true,
+    secure: !dev,
+    maxAge: 60 * 60 * 24 * 30,
+  };
+
+  cookies.set("restUrl", restUrl, options);
+  cookies.set("BhRestToken", BhRestToken, options);
 
   redirect(302, "/add");
 };
