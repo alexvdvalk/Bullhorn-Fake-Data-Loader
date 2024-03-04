@@ -2,11 +2,10 @@
   import EntityTotals from "$lib/components/EntityTotalList/EntityTotals.svelte";
   import FakeDataForm from "$lib/components/FakeDataForm.svelte";
   import type { Entity } from "$lib/components/Interfaces";
-  import { EntityTypes } from "@bullhorn/bullhorn-types";
   import type { ActionData } from "./$types";
   import Loader from "$lib/components/Loader.svelte";
 
-  let entity: Entity = EntityTypes.Candidate;
+  let entity: Entity = "Candidate";
   let numberRecords = 2;
   let formLoading: boolean;
 

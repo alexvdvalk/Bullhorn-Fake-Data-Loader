@@ -8,7 +8,7 @@
   export let numberRecords: number;
   export let formLoading = false;
 
-  const formSubmit: SubmitFunction = ({ form, data, action, cancel }) => {
+  const formSubmit: SubmitFunction = () => {
     formLoading = true;
     return async ({ update }) => {
       await update();

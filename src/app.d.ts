@@ -4,8 +4,8 @@ declare global {
   namespace App {
     // interface Error {}
     interface Locals {
-      BhRestToken: string;
-      restUrl: string;
+      BhRestToken: string | undefined;
+      restUrl: string | undefined;
     }
     // interface PageData {}
     // interface Platform {}

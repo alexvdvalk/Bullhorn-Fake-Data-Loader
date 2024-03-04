@@ -1,4 +1,4 @@
-import { type Actions, fail } from "@sveltejs/kit";
+import { type Actions, fail, redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import axios, { type AxiosInstance } from "axios";
 import {
@@ -10,23 +10,79 @@ import {
 import type { BullhornMetaResponse } from "$lib/Responses";
 import type { FieldMap } from "$lib/FieldMap";
 import { faker } from "@faker-js/faker";
+import type { EntityTitleResponse } from "$lib/interfaces";
+import { checkPing } from "$lib/checkPing";
 
-export const load = (async ({ locals, parent }) => {
-  const { settings } = await parent();
+export const load = (async ({ locals }) => {
+  try {
+    await checkPing(locals.restUrl as string, locals.BhRestToken as string);
+  } catch (err) {
+    redirect(302, "/");
+  }
+
+  const instance = axios.create({
+    baseURL: locals.restUrl,
+    params: { BhRestToken: locals.BhRestToken },
+  });
+  const settings = await getSettings(instance);
 
   const entityCounts = mainEntities.map((ent) => {
     let label = (settings as any)[`entityTitle${ent}Many`] || ent;
     return {
       entity: ent,
       label,
-      total: getTotal(ent, locals.restUrl, locals.BhRestToken),
+      total: getTotal(
+        ent,
+        locals.restUrl as string,
+        locals.BhRestToken as string
+      ),
     };
   });
 
+  const entities = mainEntities.map((ent) => {
+    return {
+      entity: ent,
+      label: (settings as any)[`entityTitle${ent}`] || ent,
+    };
+  });
   return {
     totals: entityCounts,
+    corporationDetails: {
+      corporationName: settings.corporationName,
+      corporationId: settings.corporationId,
+    },
+    entities,
+    restUrl: locals.restUrl,
+    BhRestToken: locals.BhRestToken,
   };
 }) satisfies PageServerLoad;
+
+const getSettings = async (instance: AxiosInstance) => {
+  const entities = [
+    "entityTitleCandidate",
+    "entityTitleCandidateMany",
+    "entityTitleClientContact",
+    "entityTitleClientContactMany",
+    "entityTitleJobOrder",
+    "entityTitleJobOrderMany",
+    "entityTitlePlacement",
+    "entityTitlePlacementMany",
+    "entityTitleSendout",
+    "entityTitleSendoutMany",
+    "entityTitleJobSubmission",
+    "entityTitleJobSubmissionMany",
+    "entityTitleClientCorporation",
+    "entityTitleClientCorporationMany",
+    "entityTitleLead",
+    "entityTitleLeadMany",
+    "entityTitleOpportunity",
+    "entityTitleOpportunityMany",
+  ];
+  let { data } = await instance.get<EntityTitleResponse>(
+    `settings/${entities.join(",")},corporationName,corporationId`
+  );
+  return data;
+};
 
 export const actions = {
   default: async (event) => {
@@ -75,6 +131,8 @@ const getFailedCount = (resultsArray: PromiseSettledResult<any>[]) => {
   const failed = resultsArray.filter(
     (i) => i.status === "rejected"
   ) as PromiseRejectedResult[];
+  // const failedResponses = failed.map((i) => i.response.data);
+  // console.log("failed", failedResponses);
   return failed.length;
 };
 
@@ -82,13 +140,11 @@ const addFakeRecords = async (
   fakeRecords: any[],
   entity: string,
   instance: AxiosInstance
-): Promise<PromiseSettledResult<any>[]> => {
-  let promArray: Promise<any>[] = [];
-  fakeRecords.map((i) => {
-    promArray.push(instance.put<EntityPutResponse>(`/entity/${entity}`, i));
-  });
-  const out = await Promise.allSettled(promArray);
-  return out;
+) => {
+  let promArray: Promise<any>[] = fakeRecords.map((i) =>
+    instance.put<EntityPutResponse>(`/entity/${entity}`, i)
+  );
+  return Promise.all(promArray);
 };
 
 interface EntityPutResponse {

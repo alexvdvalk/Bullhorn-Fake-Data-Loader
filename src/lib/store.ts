@@ -16,7 +16,7 @@ export const mainEntities = [
   EntityTypes.Task,
 ];
 
-const isSearchable = (entity: string): boolean => {
+export const isSearchable = (entity: string): boolean => {
   return (
     [
       "Candidate",
