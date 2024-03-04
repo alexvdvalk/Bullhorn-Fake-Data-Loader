@@ -8,6 +8,7 @@ export const checkPing = async (
   const { data } = await axios.get<PingResponse>(
     `${restUrl}ping?pingOnly=true&BhRestToken=${BhRestToken}`
   );
+  console.log("checkPing", data);
   return data;
 };
 
