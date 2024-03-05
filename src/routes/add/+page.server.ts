@@ -11,15 +11,7 @@ import type { BullhornMetaResponse } from "$lib/Responses";
 import type { FieldMap } from "$lib/FieldMap";
 import { faker } from "@faker-js/faker";
 import type { EntityTitleResponse } from "$lib/interfaces";
-import { checkPing } from "$lib/checkPing";
-
 export const load = (async ({ locals }) => {
-  try {
-    await checkPing(locals.restUrl as string, locals.BhRestToken as string);
-  } catch (err) {
-    redirect(302, "/");
-  }
-
   const instance = axios.create({
     baseURL: locals.restUrl,
     params: { BhRestToken: locals.BhRestToken },
@@ -58,30 +50,34 @@ export const load = (async ({ locals }) => {
 }) satisfies PageServerLoad;
 
 const getSettings = async (instance: AxiosInstance) => {
-  const entities = [
-    "entityTitleCandidate",
-    "entityTitleCandidateMany",
-    "entityTitleClientContact",
-    "entityTitleClientContactMany",
-    "entityTitleJobOrder",
-    "entityTitleJobOrderMany",
-    "entityTitlePlacement",
-    "entityTitlePlacementMany",
-    "entityTitleSendout",
-    "entityTitleSendoutMany",
-    "entityTitleJobSubmission",
-    "entityTitleJobSubmissionMany",
-    "entityTitleClientCorporation",
-    "entityTitleClientCorporationMany",
-    "entityTitleLead",
-    "entityTitleLeadMany",
-    "entityTitleOpportunity",
-    "entityTitleOpportunityMany",
-  ];
-  let { data } = await instance.get<EntityTitleResponse>(
-    `settings/${entities.join(",")},corporationName,corporationId`
-  );
-  return data;
+  try {
+    const entities = [
+      "entityTitleCandidate",
+      "entityTitleCandidateMany",
+      "entityTitleClientContact",
+      "entityTitleClientContactMany",
+      "entityTitleJobOrder",
+      "entityTitleJobOrderMany",
+      "entityTitlePlacement",
+      "entityTitlePlacementMany",
+      "entityTitleSendout",
+      "entityTitleSendoutMany",
+      "entityTitleJobSubmission",
+      "entityTitleJobSubmissionMany",
+      "entityTitleClientCorporation",
+      "entityTitleClientCorporationMany",
+      "entityTitleLead",
+      "entityTitleLeadMany",
+      "entityTitleOpportunity",
+      "entityTitleOpportunityMany",
+    ];
+    let { data } = await instance.get<EntityTitleResponse>(
+      `settings/${entities.join(",")},corporationName,corporationId`
+    );
+    return data;
+  } catch (err) {
+    redirect(302, "/");
+  }
 };
 
 export const actions = {
