@@ -11,73 +11,75 @@ import type { BullhornMetaResponse } from "$lib/Responses";
 import type { FieldMap } from "$lib/FieldMap";
 import { faker } from "@faker-js/faker";
 import type { EntityTitleResponse } from "$lib/interfaces";
-export const load = (async ({ locals }) => {
-  const instance = axios.create({
-    baseURL: locals.restUrl,
-    params: { BhRestToken: locals.BhRestToken },
-  });
-  const settings = await getSettings(instance);
+export const load = (async ({ locals, cookies }) => {
+  try {
+    const instance = axios.create({
+      baseURL: locals.restUrl,
+      params: { BhRestToken: locals.BhRestToken },
+    });
+    const settings = await getSettings(instance);
 
-  const entityCounts = mainEntities.map((ent) => {
-    let label = (settings as any)[`entityTitle${ent}Many`] || ent;
-    return {
-      entity: ent,
-      label,
-      total: getTotal(
-        ent,
-        locals.restUrl as string,
-        locals.BhRestToken as string
-      ),
-    };
-  });
+    const entityCounts = mainEntities.map((ent) => {
+      let label = (settings as any)[`entityTitle${ent}Many`] || ent;
+      return {
+        entity: ent,
+        label,
+        total: getTotal(
+          ent,
+          locals.restUrl as string,
+          locals.BhRestToken as string
+        ),
+      };
+    });
 
-  const entities = mainEntities.map((ent) => {
+    const entities = mainEntities.map((ent) => {
+      return {
+        entity: ent,
+        label: (settings as any)[`entityTitle${ent}`] || ent,
+      };
+    });
     return {
-      entity: ent,
-      label: (settings as any)[`entityTitle${ent}`] || ent,
+      totals: entityCounts,
+      corporationDetails: {
+        corporationName: settings.corporationName,
+        corporationId: settings.corporationId,
+      },
+      entities,
+      restUrl: locals.restUrl,
+      BhRestToken: locals.BhRestToken,
     };
-  });
-  return {
-    totals: entityCounts,
-    corporationDetails: {
-      corporationName: settings.corporationName,
-      corporationId: settings.corporationId,
-    },
-    entities,
-    restUrl: locals.restUrl,
-    BhRestToken: locals.BhRestToken,
-  };
+  } catch (er) {
+    cookies.delete("BhRestToken", { path: "/" });
+    cookies.delete("restUrl", { path: "/" });
+    redirect(302, "/");
+  }
 }) satisfies PageServerLoad;
 
 const getSettings = async (instance: AxiosInstance) => {
-  try {
-    const entities = [
-      "entityTitleCandidate",
-      "entityTitleCandidateMany",
-      "entityTitleClientContact",
-      "entityTitleClientContactMany",
-      "entityTitleJobOrder",
-      "entityTitleJobOrderMany",
-      "entityTitlePlacement",
-      "entityTitlePlacementMany",
-      "entityTitleSendout",
-      "entityTitleSendoutMany",
-      "entityTitleJobSubmission",
-      "entityTitleJobSubmissionMany",
-      "entityTitleClientCorporation",
-      "entityTitleClientCorporationMany",
-      "entityTitleLead",
-      "entityTitleLeadMany",
-      "entityTitleOpportunity",
-      "entityTitleOpportunityMany",
-    ];
-    let { data } = await instance.get<EntityTitleResponse>(
-      `settings/${entities.join(",")},corporationName,corporationId`
-    );
-    return data;
-  } catch (err) {
-    redirect(302, "/");
-  }
+  const entities = [
+    "entityTitleCandidate",
+    "entityTitleCandidateMany",
+    "entityTitleClientContact",
+    "entityTitleClientContactMany",
+    "entityTitleJobOrder",
+    "entityTitleJobOrderMany",
+    "entityTitlePlacement",
+    "entityTitlePlacementMany",
+    "entityTitleSendout",
+    "entityTitleSendoutMany",
+    "entityTitleJobSubmission",
+    "entityTitleJobSubmissionMany",
+    "entityTitleClientCorporation",
+    "entityTitleClientCorporationMany",
+    "entityTitleLead",
+    "entityTitleLeadMany",
+    "entityTitleOpportunity",
+    "entityTitleOpportunityMany",
+  ];
+  let { data } = await instance.get<EntityTitleResponse>(
+    `settings/${entities.join(",")},corporationName,corporationId`
+  );
+  return data;
 };
 
 export const actions = {
