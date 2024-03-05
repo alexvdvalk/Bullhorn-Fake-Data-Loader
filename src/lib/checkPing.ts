@@ -6,7 +6,7 @@ export const checkPing = async (
 ): Promise<PingResponse> => {
   if (!restUrl || !BhRestToken) throw new Error("Missing required parameters");
   const { data } = await axios.get<PingResponse>(
-    `${restUrl}ping?pingOnly=true&BhRestToken=${BhRestToken}`
+    `${restUrl}settings/userId?BhRestToken=${BhRestToken}`
   );
   console.log("checkPing", data);
   return data;
